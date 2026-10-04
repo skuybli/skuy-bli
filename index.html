@@ -199,11 +199,19 @@ footer a{display:block;color:#c5b9be;font-size:13px;margin:10px 0}
   <aside class="admin-panel">
     <div class="admin-head">
       <h2>Admin Produk</h2>
+      <button type="button" onclick="adminLogout()" style="border:0;background:#f0dde3;color:#7b3f58;border-radius:999px;padding:8px 12px;font-size:11px">Logout</button>
       <button class="admin-close" onclick="closeAdmin()">×</button>
     </div>
-    <div class="admin-note"><strong>Admin aktif.</strong><br>Tambahkan produk di sini. Untuk versi ini data tersimpan di browser. Setelah database online dipasang, data Admin akan tersimpan untuk semua perangkat.
-      Produk yang disimpan akan langsung muncul di halaman toko ini.
+    <div class="admin-note"><strong>Admin online.</strong><br>Login untuk mengelola kategori dan produk Skuy.Bli. Data akan disimpan ke database online.
     </div>
+    <div id="adminAuth" style="padding:14px;background:#fff;border:1px solid #ead9df;border-radius:18px;margin:0 0 16px">
+      <h3 style="margin:0 0 8px;font-family:"Cormorant Garamond",serif;font-size:25px;font-weight:500">Login Admin</h3>
+      <input id="adminEmail" type="email" placeholder="Email admin" style="width:100%;padding:12px;border:1px solid #ead9df;border-radius:12px;margin:5px 0">
+      <input id="adminPassword" type="password" placeholder="Password admin" style="width:100%;padding:12px;border:1px solid #ead9df;border-radius:12px;margin:5px 0">
+      <button type="button" class="btn" style="width:100%;margin-top:7px" onclick="adminLogin()">Masuk Admin</button>
+      <p id="adminAuthMsg" style="font-size:12px;color:#766a70;margin:9px 0 0"></p>
+    </div>
+    <div id="adminTools" style="display:none">
 
     
 <div class="category-admin">
@@ -249,13 +257,14 @@ footer a{display:block;color:#c5b9be;font-size:13px;margin:10px 0}
     </form>
 
     <div class="admin-list" id="adminList"></div>
+    </div>
   </aside>
 </div>
 
 <header>
   <a class="logo" href="#">Skuy.Bli</a>
   <nav class="nav"><a href="#admin" onclick="openAdmin();return false">Admin</a>
-    <a href="#home">Home</a><a href="admin.html">Admin</a><a href="#shop">Shop</a><a href="#new">New Arrival</a><a href="#sale">Sale</a>
+    <a href="#home">Home</a><a href="#admin" onclick="openAdmin();return false">Admin</a><a href="#shop">Shop</a><a href="#new">New Arrival</a><a href="#sale">Sale</a>
   </nav>
   <div class="icons">
     <a class="icon" href="admin.html" aria-label="admin">⚙</a>
@@ -357,11 +366,39 @@ footer a{display:block;color:#c5b9be;font-size:13px;margin:10px 0}
   <div id="cartContent"></div>
  </aside>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL="https://kmwewirepojvehjwnjzc.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_5_VdrJqaPAvYx77mtLSbEQ_YQASsgOm";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let onlineProducts=[];
+let onlineCategories=[];
+let adminSession=null;
 const STORAGE_KEY='skuy_bli_products_v2';
 const DEFAULT_PRODUCTS=[{"id": 1, "name": "Blush Satin Scarf", "category": "Hijab", "price": 89000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 2, "name": "Elara Mini Bag", "category": "Accessories", "price": 179000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 3, "name": "Celeste Heels", "category": "Shoes", "price": 249000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 4, "name": "Amora Beauty Set", "category": "Beauty", "price": 129000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 5, "name": "Luna Pearl Hijab", "category": "Hijab", "price": 99000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 6, "name": "Belle Ribbon Flats", "category": "Shoes", "price": 219000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 7, "name": "Clara Shoulder Bag", "category": "Accessories", "price": 199000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 8, "name": "Rosé Glow Set", "category": "Beauty", "price": 149000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}];
-function getProducts(){try{const raw=localStorage.getItem('skuy_bli_products_v3')||localStorage.getItem(STORAGE_KEY);return raw===null?DEFAULT_PRODUCTS:JSON.parse(raw)}catch(e){return DEFAULT_PRODUCTS}}
-function saveProducts(items){localStorage.setItem(STORAGE_KEY,JSON.stringify(items))}
+async function loadOnlineData(){
+  try{
+    const [{data:cats,error:ce},{data:prods,error:pe}]=await Promise.all([
+      sb.from('categories').select('id,name').order('name'),
+      sb.from('products').select('id,name,price,category_id,description,image_url,stock,is_new,is_best_seller,is_sale,weight_grams').order('created_at',{ascending:false})
+    ]);
+    if(ce) throw ce; if(pe) throw pe;
+    onlineCategories=cats||[];
+    const cmap=new Map(onlineCategories.map(c=>[c.id,c.name]));
+    onlineProducts=(prods||[]).map(p=>({id:p.id,name:p.name,category:cmap.get(p.category_id)||'',price:Number(p.price||0),oldPrice:0,stock:Number(p.stock||0),description:p.description||'',label:p.is_sale?'sale':p.is_best_seller?'best':'new',image:p.image_url||'',weight_grams:Number(p.weight_grams||0)}));
+    if(onlineProducts.length || onlineCategories.length){
+      renderCategoryCards(); renderCategories(); renderProducts(); renderCart(); renderAdminList();
+    } else {
+      renderCategoryCards(); renderProducts(); renderCart();
+    }
+  }catch(err){
+    console.error(err);
+    onlineProducts=[]; onlineCategories=[];
+    renderCategoryCards(); renderProducts(); renderCart();
+  }
+}
+function getProducts(){return onlineProducts.length?onlineProducts:DEFAULT_PRODUCTS}
+function saveProducts(items){onlineProducts=items}
 function money(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}
 function safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
@@ -370,7 +407,7 @@ function getCart(){try{return JSON.parse(localStorage.getItem(CART_KEY)||'{}')}c
 function saveCart(c){localStorage.setItem(CART_KEY,JSON.stringify(c));renderCart()}
 function addCart(id){const c=getCart(),p=getProducts().find(x=>x.id===id);if(!p||p.stock<1)return alert('Stok habis');c[id]=Math.min((c[id]||0)+1,p.stock);saveCart(c);openCart()}
 function changeQty(id,delta){const c=getCart(),p=getProducts().find(x=>x.id===id);if(!p)return;const n=(c[id]||0)+delta;if(n<=0)delete c[id];else c[id]=Math.min(n,p.stock);saveCart(c)}
-function renderProducts(){const products=getProducts();for(const [key,target] of [['new','newProducts'],['best','bestProducts']]){const list=products.filter(p=>p.label===key);document.getElementById(target).innerHTML=list.length?list.map(p=>`<article class="card"><div class="photo ${p.image?'has-image':''}">${p.image?`<img src="${p.image}" alt="${safe(p.name)}">`:'<div class="shape"></div>'}<span class="badge">${key==='new'?'NEW':'BEST SELLER'}</span></div><div class="card-info"><h3>${safe(p.name)}</h3><p class="product-description">${safe(p.category)}</p><span class="price">${money(p.price)}</span>${p.oldPrice?` <span class="old">${money(p.oldPrice)}</span>`:''}<p>${safe(p.description)}</p><button class="btn" ${p.stock<1?'disabled':''} onclick="addCart(${p.id})">${p.stock<1?'Stok Habis':'Tambah ke Keranjang'}</button></div></article>`).join(''):'<p>Belum ada produk di koleksi ini. Tambahkan melalui halaman Admin.</p>'}}
+function renderProducts(){const products=getProducts();for(const [key,target] of [['new','newProducts'],['best','bestProducts']]){const list=products.filter(p=>p.label===key);document.getElementById(target).innerHTML=list.length?list.map(p=>`<article class="card"><div class="photo ${p.image?'has-image':''}">${p.image?`<img src="${p.image}" alt="${safe(p.name)}">`:'<div class="shape"></div>'}<span class="badge">${key==='new'?'NEW':'BEST SELLER'}</span></div><div class="card-info"><h3>${safe(p.name)}</h3><p class="product-description">${safe(p.category)}</p><span class="price">${money(p.price)}</span>${p.oldPrice?` <span class="old">${money(p.oldPrice)}</span>`:''}<p>${safe(p.description)}</p><button class="btn" ${p.stock<1?'disabled':''} onclick="addCart(${p.id})">${p.stock<1?'Stok Habis':'Tambah ke Keranjang'}</button></div></article>`).join(''):'<p>Belum ada produk di koleksi ini. Tambahkan melalui Admin.</p>'}}
 function renderCart(){const cart=getCart(),items=getProducts(),entries=Object.entries(cart).filter(([id,q])=>q>0&&items.some(p=>p.id===Number(id)));document.getElementById('cartCount').textContent=entries.reduce((a,[id,q])=>a+q,0);let total=0;document.getElementById('cartContent').innerHTML=entries.length?entries.map(([id,q])=>{const p=items.find(p=>p.id===Number(id));total+=p.price*q;return `<div class="cart-item"><div class="thumb">${p.image?`<img src="${p.image}" alt="">`:''}</div><div><h4>${safe(p.name)}</h4><small>${money(p.price)}</small><div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><span>${q}</span><button onclick="changeQty(${p.id},1)">+</button></div></div></div>`}).join('')+`<div class="total"><span>Subtotal</span><span>${money(total)}</span></div><button class="btn" style="width:100%" onclick="checkout()">Pesan Sekarang via WhatsApp</button>`:'<p>Keranjangmu masih kosong.</p>'}
 function checkout(){
   const cart=getCart(), items=getProducts();
@@ -398,118 +435,24 @@ Mohon dibantu cek ongkir dan proses pesanannya. Terima kasih 🤍`;
   // Directly open WhatsApp. No browser prompt and no restart of the shopping flow.
   window.location.href='https://wa.me/6285811687069?text='+encodeURIComponent(msg);
 }
-window.addEventListener('storage',()=>{renderProducts();renderCart()});renderProducts();renderCart();
+window.addEventListener('storage',()=>{renderProducts();renderCart()});
+renderProducts();
+renderCart();
+loadOnlineData().then(()=>{refreshCategorySelect();renderCategoryCards();renderCategories();renderProducts();renderCart();}).catch(()=>{});
 function openCart(){document.getElementById('drawer').classList.add('open')}
 function closeCart(){document.getElementById('drawer').classList.remove('open')}
 
 const ADMIN_STORAGE='skuy_bli_products_v3';
 const OLD_STORAGE='skuy_bli_products_v2';
-
-
-const CATEGORY_STORAGE='skuy_bli_categories_v1';
 const DEFAULT_CATEGORIES=['Hijab','Shoes','Accessories','Beauty','Clothing','Bags'];
+function readCategories(){return onlineCategories.length?onlineCategories.map(c=>c.name):DEFAULT_CATEGORIES}
+function refreshCategorySelect(){const select=document.getElementById('adminCategory');if(!select)return;const current=select.value;const cats=readCategories();select.innerHTML=cats.map(c=>`<option value="${adminSafe(c)}">${adminSafe(c)}</option>`).join('');if(cats.includes(current))select.value=current;}
+function renderCategories(){const box=document.getElementById('categoryList');if(!box)return;const cats=readCategories();const products=readProducts();box.innerHTML=cats.map(c=>{const used=products.filter(p=>p.category===c).length;return `<div class="category-row" data-category="${adminSafe(c)}"><div><span>${adminSafe(c)}</span> <small>${used} produk</small></div><div class="mini"><button type="button" onclick="startCategoryEdit(${JSON.stringify(c)})">Edit</button><button type="button" class="del" onclick="deleteCategory(${JSON.stringify(c)})">Hapus</button></div></div>`}).join('')}
+async function addCategory(){if(!adminSession){return showAdminAuth('Silakan login Admin terlebih dahulu.')}const input=document.getElementById('newCategoryName');const name=(input.value||'').trim();if(!name)return alert('Nama kategori belum diisi.');if(readCategories().some(c=>c.toLowerCase()===name.toLowerCase()))return alert('Kategori tersebut sudah ada.');const {data,error}=await sb.from('categories').insert({name}).select('id,name').single();if(error)return alert('Kategori gagal disimpan: '+error.message);onlineCategories.push(data);input.value='';refreshCategorySelect();renderCategories();renderCategoryCards();document.getElementById('adminCategory').value=name}
+function startCategoryEdit(oldName){const row=[...document.querySelectorAll('.category-row')].find(el=>el.dataset.category===oldName);if(!row)return;row.innerHTML=`<div class="category-edit"><input id="editCatInput" value="${adminSafe(oldName)}" aria-label="Nama kategori baru"><button type="button" onclick="saveCategoryEdit(${JSON.stringify(oldName)})">Simpan</button><button type="button" onclick="renderCategories()">Batal</button></div>`;const input=document.getElementById('editCatInput');if(input){input.focus();input.select();input.addEventListener('keydown',e=>{if(e.key==='Enter')saveCategoryEdit(oldName);if(e.key==='Escape')renderCategories()})}}
+async function saveCategoryEdit(oldName){if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');const input=document.getElementById('editCatInput');const name=(input?.value||'').trim();if(!name)return alert('Nama kategori belum diisi.');if(name===oldName){renderCategories();return}if(readCategories().some(c=>c.toLowerCase()===name.toLowerCase()&&c!==oldName))return alert('Nama kategori tersebut sudah ada.');const cat=onlineCategories.find(c=>c.name===oldName);if(!cat)return;const {data,error}=await sb.from('categories').update({name}).eq('id',cat.id).select('id,name').single();if(error)return alert('Kategori gagal diubah: '+error.message);onlineCategories=onlineCategories.map(c=>c.id===cat.id?data:c);refreshCategorySelect();renderCategories();renderCategoryCards();await loadOnlineData();document.getElementById('adminCategory').value=name}
+async function deleteCategory(name){if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');const products=readProducts();const used=products.filter(p=>p.category===name).length;if(used)return alert(`Kategori "${name}" masih dipakai oleh ${used} produk. Pindahkan produknya terlebih dahulu.`);if(!confirm(`Hapus kategori "${name}"?`))return;const cat=onlineCategories.find(c=>c.name===name);if(!cat)return;const {error}=await sb.from('categories').delete().eq('id',cat.id);if(error)return alert('Kategori gagal dihapus: '+error.message);onlineCategories=onlineCategories.filter(c=>c.id!==cat.id);refreshCategorySelect();renderCategories();renderCategoryCards()}
 
-function readCategories(){
-  try{
-    const raw=localStorage.getItem(CATEGORY_STORAGE);
-    if(raw){
-      const parsed=JSON.parse(raw);
-      if(Array.isArray(parsed) && parsed.length) return parsed;
-    }
-  }catch(e){}
-  return [...DEFAULT_CATEGORIES];
-}
-function writeCategories(items){
-  try{
-    localStorage.setItem(CATEGORY_STORAGE,JSON.stringify(items));
-    return true;
-  }catch(e){
-    alert('Kategori tidak bisa disimpan di browser ini.');
-    return false;
-  }
-}
-function refreshCategorySelect(){
-  const select=document.getElementById('adminCategory');
-  if(!select)return;
-  const current=select.value;
-  const cats=readCategories();
-  select.innerHTML=cats.map(c=>`<option value="${adminSafe(c)}">${adminSafe(c)}</option>`).join('');
-  if(cats.includes(current)) select.value=current;
-}
-function renderCategories(){
-  const box=document.getElementById('categoryList');
-  if(!box)return;
-  const cats=readCategories();
-  const products=readProducts();
-  box.innerHTML=cats.map(c=>{
-    const used=products.filter(p=>p.category===c).length;
-    return `<div class="category-row" data-category="${adminSafe(c)}">
-      <div><span>${adminSafe(c)}</span> <small>${used} produk</small></div>
-      <div class="mini">
-        <button type="button" onclick="startCategoryEdit(${JSON.stringify(c)})">Edit</button>
-        <button type="button" class="del" onclick="deleteCategory(${JSON.stringify(c)})">Hapus</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-function addCategory(){
-  const input=document.getElementById('newCategoryName');
-  const name=(input.value||'').trim();
-  if(!name){alert('Nama kategori belum diisi.');return;}
-  const cats=readCategories();
-  if(cats.some(c=>c.toLowerCase()===name.toLowerCase())){
-    alert('Kategori tersebut sudah ada.');
-    return;
-  }
-  cats.push(name);
-  if(writeCategories(cats)){
-    input.value='';
-    refreshCategorySelect();
-    renderCategories();
-    renderCategoryCards();
-    document.getElementById('adminCategory').value=name;
-  }
-}
-function startCategoryEdit(oldName){
-  const row=[...document.querySelectorAll('.category-row')].find(el=>el.dataset.category===oldName);
-  if(!row)return;
-  const current=oldName;
-  row.innerHTML=`<div class="category-edit"><input id="editCatInput" value="${adminSafe(current)}" aria-label="Nama kategori baru"><button type="button" onclick="saveCategoryEdit(${JSON.stringify(current)})">Simpan</button><button type="button" onclick="renderCategories()">Batal</button></div>`;
-  const input=document.getElementById('editCatInput'); if(input){input.focus(); input.select(); input.addEventListener('keydown',e=>{if(e.key==='Enter')saveCategoryEdit(current); if(e.key==='Escape')renderCategories();});}
-}
-function saveCategoryEdit(oldName){
-  const input=document.getElementById('editCatInput');
-  const name=(input?.value||'').trim();
-  if(!name){alert('Nama kategori belum diisi.');return;}
-  if(name===oldName){renderCategories();return;}
-  const cats=readCategories();
-  if(cats.some(c=>c.toLowerCase()===name.toLowerCase() && c!==oldName)){alert('Nama kategori tersebut sudah ada.');return;}
-  const idx=cats.indexOf(oldName); if(idx<0)return;
-  cats[idx]=name;
-  const products=readProducts().map(p=>p.category===oldName?{...p,category:name}:p);
-  if(writeCategories(cats) && writeProducts(products)){
-    refreshCategorySelect();
-    renderCategories();
-    renderCategoryCards();
-    syncProducts();
-    document.getElementById('adminCategory').value=name;
-  }
-}
-function deleteCategory(name){
-  const products=readProducts();
-  const used=products.filter(p=>p.category===name).length;
-  if(used){
-    alert(`Kategori "${name}" masih dipakai oleh ${used} produk. Edit atau pindahkan produknya terlebih dahulu.`);
-    return;
-  }
-  if(!confirm(`Hapus kategori "${name}"?`))return;
-  const cats=readCategories().filter(c=>c!==name);
-  if(writeCategories(cats)){
-    refreshCategorySelect();
-    renderCategories();
-    renderCategoryCards();
-  }
-}
 function renderCategoryCards(){
   const wrap=document.querySelector('.categories');
   if(!wrap)return;
@@ -530,41 +473,25 @@ function filterCategory(category){
   document.getElementById('new')?.scrollIntoView({behavior:'smooth'});
 }
 
-function readProducts(){
-  try{
-    let raw=localStorage.getItem(ADMIN_STORAGE);
-    if(!raw) raw=localStorage.getItem(OLD_STORAGE);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return DEFAULT_PRODUCTS.map(p=>({...p}));
+function readProducts(){return onlineProducts.length?onlineProducts:DEFAULT_PRODUCTS.map(p=>({...p}))}
+async function writeProductOnline(p,oldId){
+  if(!adminSession) throw new Error('Admin belum login.');
+  const cat=onlineCategories.find(c=>c.name===p.category);
+  if(!cat) throw new Error('Kategori tidak ditemukan.');
+  const row={name:p.name,price:Number(p.price||0),category_id:cat.id,description:p.description||'',image_url:p.image||'',stock:Number(p.stock||0),is_new:p.label==='new',is_best_seller:p.label==='best',is_sale:p.label==='sale',weight_grams:Number(p.weight_grams||0)};
+  if(oldId){const {data,error}=await sb.from('products').update(row).eq('id',oldId).select('id,name,price,category_id,description,image_url,stock,is_new,is_best_seller,is_sale,weight_grams').single();if(error)throw error;return data}
+  const {data,error}=await sb.from('products').insert(row).select('id,name,price,category_id,description,image_url,stock,is_new,is_best_seller,is_sale,weight_grams').single();if(error)throw error;return data
 }
-function writeProducts(items){
-  try{
-    localStorage.setItem(ADMIN_STORAGE,JSON.stringify(items));
-    localStorage.setItem(OLD_STORAGE,JSON.stringify(items));
-    return true;
-  }catch(e){
-    alert('Browser ini tidak mengizinkan penyimpanan permanen. Produk tetap akan tampil selama halaman ini terbuka. Untuk toko online sungguhan kita perlu database online.');
-    return false;
-  }
-}
-function syncProducts(){
-  // Override the storefront's product reader with the same data used by Admin.
-  window.getProducts=readProducts;
-  refreshCategorySelect();
-  renderCategoryCards();
-  renderCategories();
-  renderProducts();
-  renderCart();
-  renderAdminList();
-}
-function openAdmin(){
-  document.getElementById('adminOverlay').classList.add('open');
-  refreshCategorySelect();
-  renderCategories();
-  renderAdminList();
-}
+async function deleteProductOnline(id){const {error}=await sb.from('products').delete().eq('id',id);if(error)throw error}
+function syncProducts(){refreshCategorySelect();renderCategoryCards();renderCategories();renderProducts();renderCart();renderAdminList()}
+async function openAdmin(){document.getElementById('adminOverlay').classList.add('open');const {data:{session}}=await sb.auth.getSession();adminSession=session;updateAdminAuthUI();if(session){await loadOnlineData();await ensureDefaultCategories();refreshCategorySelect();renderCategories();renderAdminList()}}
 function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open')}
+function showAdminAuth(msg=''){const el=document.getElementById('adminAuthMsg');if(el)el.textContent=msg}
+function updateAdminAuthUI(){const auth=document.getElementById('adminAuth');const tools=document.getElementById('adminTools');if(adminSession){auth.style.display='none';tools.style.display='block'}else{auth.style.display='block';tools.style.display='none'}}
+async function adminLogin(){const email=document.getElementById('adminEmail').value.trim();const password=document.getElementById('adminPassword').value;if(!email||!password)return showAdminAuth('Isi email dan password admin.');showAdminAuth('Sedang masuk...');const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)return showAdminAuth('Login gagal: '+error.message);adminSession=data.session;updateAdminAuthUI();await loadOnlineData();await ensureDefaultCategories();await loadOnlineData();refreshCategorySelect();renderCategories();renderAdminList();showAdminAuth('')}
+async function adminLogout(){await sb.auth.signOut();adminSession=null;updateAdminAuthUI();showAdminAuth('Kamu sudah logout.');}
+async function ensureDefaultCategories(){if(!adminSession)return;if(onlineCategories.length)return;for(const name of DEFAULT_CATEGORIES){await sb.from('categories').insert({name}).select('id,name').single()}await loadOnlineData()}
+sb.auth.onAuthStateChange((_event,session)=>{adminSession=session;updateAdminAuthUI()})
 function adminMoney(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}
 function adminSafe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
@@ -596,7 +523,8 @@ function adminReset(){
   document.getElementById('adminPreview').src='';
   document.getElementById('adminImage').value='';
 }
-function adminEdit(id){
+async function adminEdit(id){
+  if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');
   const p=readProducts().find(x=>x.id===id); if(!p)return;
   document.getElementById('adminId').value=p.id;
   document.getElementById('adminName').value=p.name;
@@ -612,10 +540,10 @@ function adminEdit(id){
     document.getElementById('adminPreview').style.display='block';
   }
 }
-function adminDelete(id){
+async function adminDelete(id){
+  if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');
   if(!confirm('Hapus produk ini?'))return;
-  const items=readProducts().filter(p=>p.id!==id);
-  writeProducts(items); syncProducts();
+  try{await deleteProductOnline(id);await loadOnlineData();syncProducts();}catch(err){alert('Produk gagal dihapus: '+err.message)}
 }
 function compressAdminImage(file,maxSide=1000,quality=.78){
   return new Promise((resolve,reject)=>{
@@ -647,36 +575,23 @@ document.getElementById('adminImage').addEventListener('change',async e=>{
 });
 document.getElementById('adminForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  const items=readProducts();
-  const id=Number(document.getElementById('adminId').value)||Date.now();
-  const old=items.find(p=>p.id===id);
-  let image=old?.image||'';
-  const file=document.getElementById('adminImage').files[0];
-  if(file) image=await compressAdminImage(file);
-  const p={
-    id,
-    name:document.getElementById('adminName').value.trim(),
-    category:document.getElementById('adminCategory').value,
-    price:Number(document.getElementById('adminPrice').value||0),
-    oldPrice:Number(document.getElementById('adminOldPrice').value||0),
-    stock:Number(document.getElementById('adminStock').value||0),
-    label:document.getElementById('adminLabel').value,
-    description:document.getElementById('adminDescription').value.trim(),
-    image
-  };
-  if(!p.name){alert('Nama produk wajib diisi.');return}
-  if(old){
-    items[items.findIndex(x=>x.id===id)]=p;
-  }else{
-    items.unshift(p);
-  }
-  writeProducts(items);
-  syncProducts();
-  adminReset();
-  alert(old?'Produk berhasil diperbarui.':'Produk berhasil ditambahkan dan langsung tampil di toko.');
+  if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');
+  try{
+    const id=Number(document.getElementById('adminId').value)||null;
+    const old=id?readProducts().find(p=>p.id===id):null;
+    let image=old?.image||'';
+    const file=document.getElementById('adminImage').files[0];
+    if(file) image=await compressAdminImage(file);
+    const p={id,name:document.getElementById('adminName').value.trim(),category:document.getElementById('adminCategory').value,price:Number(document.getElementById('adminPrice').value||0),oldPrice:Number(document.getElementById('adminOldPrice').value||0),stock:Number(document.getElementById('adminStock').value||0),label:document.getElementById('adminLabel').value,description:document.getElementById('adminDescription').value.trim(),image,weight_grams:0};
+    if(!p.name)return alert('Nama produk wajib diisi.');
+    await writeProductOnline(p,id);
+    await loadOnlineData();syncProducts();adminReset();alert(id?'Produk berhasil diperbarui online.':'Produk berhasil ditambahkan online.');
+  }catch(err){alert('Produk gagal disimpan: '+err.message)}
 });
+
 window.addEventListener('storage',syncProducts);
 syncProducts();
+loadOnlineData();
 
 
 document.addEventListener('DOMContentLoaded', function(){
