@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skuy.Bli — Fashion for Everyday</title>
+<meta name="description" content="Skuy.Bli — fashion wanita yang simple, manis, elegan, dan mudah dipadukan untuk setiap harimu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blush:#eadcdf; --blush2:#f4e9eb; --cream:#fbf8f4; --white:#fff;
+  --ink:#292329; --muted:#756c73; --wine:#714255; --gold:#b79a70;
+  --line:#e9e0e2; --radius:26px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:"DM Sans",sans-serif}
+a{text-decoration:none;color:inherit}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.container{width:min(1120px,calc(100% - 36px));margin:auto}
+header{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:20;background:rgba(251,248,244,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(233,224,226,.65)}
+.logo{font-family:"Cormorant Garamond",serif;font-size:31px;font-weight:700;letter-spacing:.5px}
+.nav{display:flex;gap:30px;font-size:13px;color:#554d53}
+.nav a:hover{color:var(--wine)}
+.icons{display:flex;gap:10px}
+.icon{border:1px solid var(--line);background:#fff;width:40px;height:40px;border-radius:50%;display:grid;place-items:center}
+.hero{min-height:calc(100vh - 76px);display:grid;place-items:center;padding:55px 0 75px;background:linear-gradient(145deg,#f8e9ed 0%,#f0dce3 55%,#e6cbd5 100%);overflow:hidden;position:relative}
+.hero:before{content:"";position:absolute;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.24);right:-100px;top:80px}
+.hero-inner{text-align:center;max-width:760px;position:relative;z-index:1}
+.eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:#66545e;margin-bottom:24px}
+h1,h2,h3{font-family:"Cormorant Garamond",serif;margin:0}
+h1{font-size:clamp(62px,11vw,112px);line-height:.82;font-weight:500;letter-spacing:-2px}
+.hero p{font-size:16px;line-height:1.9;max-width:540px;margin:30px auto;color:#4e474c}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:15px 30px;background:var(--wine);color:#fff;font-size:13px;transition:.25s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px #71425530}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid #b9a9ae}
+.scroll{margin-top:65px;width:48px;height:48px;border:1px solid #a99ba0;border-radius:50%;display:grid;place-items:center;margin-left:auto;margin-right:auto}
+.section{padding:95px 0}
+.section-head{text-align:center;margin-bottom:42px}
+.section-head .eyebrow{margin-bottom:10px}
+.section-head h2{font-size:55px;font-weight:500}
+.section-head p{color:var(--muted);font-size:14px;margin-top:10px}
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.category{height:330px;border-radius:var(--radius);padding:25px;display:flex;align-items:end;position:relative;overflow:hidden;background:linear-gradient(145deg,#e9d6dc,#d4bdc5);transition:.3s}
+.category:nth-child(2){background:linear-gradient(145deg,#f0dce2,#c997a9)}
+.category:nth-child(3){background:linear-gradient(145deg,#ead6dd,#bd879b)}
+.category:nth-child(4){background:linear-gradient(145deg,#f5e0e7,#c98da2)}
+.category:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(25,20,23,.35))}
+.category:hover{transform:translateY(-5px)}
+.category span{position:relative;z-index:1;color:white;font-family:"Cormorant Garamond";font-size:34px}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{position:relative}
+.photo{aspect-ratio:4/5;border-radius:22px;overflow:hidden;background:#eadfe1;position:relative}
+.photo.has-image img{width:100%;height:100%;object-fit:cover;display:block}.thumb img{width:100%;height:100%;object-fit:cover;border-radius:14px}.photo .shape{position:absolute;width:55%;height:75%;left:23%;bottom:-5%;border-radius:50% 50% 14% 14%;background:linear-gradient(145deg,#9b7684,#d7b9c3)}
+.photo .shape:before{content:"";position:absolute;width:55%;height:20%;left:23%;top:-5%;border-radius:50%;background:#6f4d5a}
+.photo.beige{background:#eee4d8}.photo.beige .shape{background:linear-gradient(145deg,#c88fa2,#f0dce2)} 
+.photo.cream{background:#eeeae6}.photo.cream .shape{background:linear-gradient(145deg,#b98a9a,#f4e4e9)}
+.photo.rose{background:#ead7dc}.photo.rose .shape{background:linear-gradient(145deg,#b77d91,#e4b9c6)}
+.badge{position:absolute;top:13px;left:13px;background:#fff8;color:#5e4350;backdrop-filter:blur(8px);padding:7px 10px;border-radius:999px;font-size:10px;letter-spacing:1px}
+.card-info{padding:14px 3px}
+.card-info h3{font-size:25px;font-weight:500}
+.card-info p{font-size:12px;color:var(--muted);margin:4px 0 8px}
+.price{font-size:13px;font-weight:600}.card-info .btn{margin-top:12px;padding:11px 17px;font-size:12px}
+.sale{color:var(--wine)}
+.old{text-decoration:line-through;color:#a29a9e;font-weight:400;margin-left:7px}
+.promo{background:linear-gradient(145deg,#9b526b,#7b3f58);color:#fff;border-radius:34px;padding:65px 40px;text-align:center}
+.promo h2{font-size:58px}
+.promo p{color:#f8e9ed;max-width:500px;margin:14px auto 25px;line-height:1.7}
+.editorial{display:grid;grid-template-columns:1.1fr .9fr;gap:35px;align-items:center}
+.editorial-image{min-height:520px;border-radius:34px;background:linear-gradient(145deg,#ead4dc,#b77b91);position:relative;overflow:hidden}
+.editorial-image:after{content:"";position:absolute;width:55%;height:90%;left:22%;bottom:-10%;background:linear-gradient(160deg,#f4e4e9,#96566f);border-radius:48% 48% 8% 8%}
+.editorial-copy{padding:25px}
+.editorial-copy h2{font-size:68px;line-height:.92;font-weight:500}
+.editorial-copy p{line-height:1.9;color:var(--muted);font-size:14px;margin:25px 0}
+footer{background:#30282d;color:#f7eff1;padding:65px 0 30px}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:30px}
+footer .logo{color:#fff}
+footer p{color:#c5b9be;font-size:13px;line-height:1.8;max-width:310px}
+footer h4{font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:500}
+footer a{display:block;color:#c5b9be;font-size:13px;margin:10px 0}
+.copy{border-top:1px solid #4b4147;margin-top:40px;padding-top:20px;color:#9f9399;font-size:11px}
+.drawer{position:fixed;inset:0;background:#0005;z-index:50;display:none}
+.drawer.open{display:block}
+.panel{position:absolute;right:0;top:0;height:100%;width:min(430px,100%);background:var(--cream);padding:28px;overflow:auto}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.panel h2{font-size:38px}
+.close{border:0;background:none;font-size:28px}
+.cart-item{display:flex;gap:13px;padding:15px 0;border-bottom:1px solid var(--line)}
+.thumb{width:75px;height:90px;border-radius:14px;background:#dfcdd2}
+.cart-item h4{margin:0;font-family:"Cormorant Garamond";font-size:23px;font-weight:500}
+.cart-item small{color:var(--muted)}
+.qty{display:flex;gap:10px;align-items:center;margin-top:8px}
+.qty button{border:1px solid var(--line);background:#fff;border-radius:50%;width:26px;height:26px}
+.total{display:flex;justify-content:space-between;margin:25px 0;font-weight:600}
+.form{display:grid;gap:12px}
+.form input,.form textarea,.form select{width:100%;padding:14px 15px;border:1px solid var(--line);border-radius:14px;background:white;outline:none}
+.form textarea{min-height:90px;resize:vertical}
+.mobile-menu{display:none}
+@media(max-width:800px){
+  header{height:68px;padding:0 17px}.logo{font-size:28px}.nav{display:none}.mobile-menu{display:grid}
+  .hero{min-height:calc(100vh - 68px);padding:35px 18px 55px}.hero-inner{max-width:600px}
+  h1{font-size:clamp(57px,16vw,88px);line-height:.84}.hero p{font-size:14px;margin:25px auto}.scroll{margin-top:45px}
+  .section{padding:70px 0}.container{width:min(100% - 28px,1120px)}
+  .section-head h2{font-size:45px}.categories{grid-template-columns:repeat(2,1fr);gap:10px}.category{height:220px;border-radius:20px;padding:17px}.category span{font-size:28px}
+  .products{grid-template-columns:repeat(2,1fr);gap:15px}.photo{border-radius:17px}.card-info h3{font-size:21px}
+  .promo{padding:48px 22px;border-radius:27px}.promo h2{font-size:45px}
+  .editorial{grid-template-columns:1fr}.editorial-image{min-height:390px;border-radius:25px}.editorial-copy{padding:5px}.editorial-copy h2{font-size:55px}
+    .footer-grid{grid-template-columns:1fr 1fr}.footer-grid>div:first-child{grid-column:1/-1}
+}
+</style>
+
+<style>
+.admin-fab{position:fixed;right:18px;bottom:18px;z-index:40;border:0;background:#7b3f58;color:#fff;border-radius:999px;padding:13px 18px;box-shadow:0 10px 30px #7b3f5830;font-size:12px}
+.admin-overlay{position:fixed;inset:0;background:#241c205c;z-index:100;display:none}
+.admin-overlay.open{display:block}
+.admin-panel{position:absolute;right:0;top:0;height:100%;width:min(520px,100%);background:#fffafb;overflow:auto;padding:24px}
+.admin-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.admin-head h2{font-family:"Cormorant Garamond",serif;font-size:42px;font-weight:500;margin:0}
+.admin-close{border:0;background:none;font-size:30px;color:#7b3f58}
+.admin-note{background:#f4e3e8;border-radius:18px;padding:14px 16px;font-size:12px;line-height:1.6;margin-bottom:18px}
+.admin-form{display:grid;gap:10px}
+.admin-form label{font-size:12px;color:#62565d}
+.admin-form input,.admin-form select,.admin-form textarea{width:100%;padding:13px 14px;border:1px solid #ead9df;border-radius:14px;background:#fff;outline:none}
+.admin-form textarea{min-height:80px;resize:vertical}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.admin-actions button{border:0;border-radius:999px;padding:12px 16px;background:#7b3f58;color:#fff}
+.admin-actions .light{background:#f0dde3;color:#7b3f58}
+.admin-list{margin-top:25px;border-top:1px solid #ead9df}
+.admin-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #ead9df;align-items:center}
+.admin-item img,.admin-item .noimg{width:62px;height:78px;border-radius:12px;object-fit:cover;background:#f0dde3;flex:none}
+.admin-item strong{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:500}
+.admin-item small{display:block;color:#766a70;margin:3px 0 8px}
+.admin-item .mini{display:flex;gap:6px}
+.admin-item .mini button{border:0;border-radius:999px;padding:7px 10px;font-size:11px;background:#f0dde3;color:#7b3f58}
+.admin-item .mini .del{background:#7b3f58;color:#fff}
+.admin-preview{max-width:120px;max-height:150px;border-radius:14px;display:none;object-fit:cover}
+</style>
+
+<style>
+/* Product description: short, clean, and never a tall block */
+.card-info .product-description,
+.product-description {
+  color:#766a70;
+  font-size:13px;
+  line-height:1.55;
+  margin:7px 0 12px;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+  min-height:40px;
+}
+.card-info h3{
+  line-height:1.05;
+  margin-bottom:5px;
+}
+.card-info p{
+  line-height:1.35;
+}
+@media(max-width:800px){
+  .card-info .product-description,
+  .product-description{
+    font-size:12px;
+    line-height:1.5;
+    min-height:36px;
+  }
+}
+</style>
+
+<style>
+.category-admin{margin-top:28px;padding-top:22px;border-top:1px solid #ead9df}
+.category-admin h3{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:500;margin:0 0 8px}
+.category-add{display:flex;gap:8px;margin:12px 0 14px}
+.category-add input{flex:1;padding:12px 13px;border:1px solid #ead9df;border-radius:14px;background:#fff}
+.category-add button{border:0;border-radius:999px;padding:11px 15px;background:#7b3f58;color:#fff}
+.category-list{display:grid;gap:8px}
+.category-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;background:#fff;border:1px solid #ead9df;border-radius:14px}
+.category-row span{font-size:13px}
+.category-row .mini{display:flex;gap:6px}
+.category-row button{border:0;border-radius:999px;padding:7px 10px;background:#f0dde3;color:#7b3f58;font-size:11px}
+.category-row button.del{background:#7b3f58;color:#fff}
+.category-row small{color:#8a7b82}.category-edit{display:flex;gap:6px;align-items:center}.category-edit input{width:150px;padding:8px 10px;border:1px solid #ead9df;border-radius:10px;background:#fff}.category-edit button{border:0;border-radius:999px;padding:7px 10px;background:#7b3f58;color:#fff;font-size:11px}
+</style>
+</head>
+<body>
+
+<a href="https://wa.me/6285811687069" target="_blank" rel="noopener"
+   aria-label="Chat WhatsApp Skuy.Bli"
+   style="position:fixed;left:18px;bottom:18px;z-index:39;background:#7b3f58;color:#fff;border-radius:999px;padding:13px 17px;box-shadow:0 10px 30px #7b3f5830;font-size:12px">
+  WhatsApp
+</a>
+
+<button class="admin-fab" onclick="openAdmin()">⚙ Admin</button>
+
+<div class="admin-overlay" id="adminOverlay" onclick="if(event.target===this)closeAdmin()">
+  <aside class="admin-panel">
+    <div class="admin-head">
+      <h2>Admin Produk</h2>
+      <button class="admin-close" onclick="closeAdmin()">×</button>
+    </div>
+    <div class="admin-note"><strong>Admin aktif.</strong><br>Tambahkan produk di sini. Untuk versi ini data tersimpan di browser. Setelah database online dipasang, data Admin akan tersimpan untuk semua perangkat.
+      Produk yang disimpan akan langsung muncul di halaman toko ini.
+    </div>
+
+    
+<div class="category-admin">
+  <h3>Kelola Kategori</h3>
+  <div style="font-size:12px;color:#766a70;line-height:1.5">
+    Tambah, edit, atau hapus kategori. Kategori yang kamu buat akan otomatis muncul di pilihan saat menambah produk.
+  </div>
+  <div class="category-add">
+    <input id="newCategoryName" placeholder="Contoh: Dress">
+    <button type="button" onclick="addCategory()">+ Tambah</button>
+  </div>
+  <div class="category-list" id="categoryList"></div>
+</div>
+
+<form class="admin-form" id="adminForm">
+      <input type="hidden" id="adminId">
+      <label>Nama produk</label>
+      <input id="adminName" required placeholder="Contoh: Hijab Baby Tryspan">
+      <label>Kategori</label>
+      <select id="adminCategory"></select>
+      <label>Harga (Rp)</label>
+      <input id="adminPrice" type="number" min="0" required placeholder="49000">
+      <label>Harga sebelum diskon (opsional)</label>
+      <input id="adminOldPrice" type="number" min="0" value="0">
+      <label>Stok</label>
+      <input id="adminStock" type="number" min="0" value="1">
+      <label>Tampilkan di</label>
+      <select id="adminLabel">
+        <option value="new">New Arrivals</option>
+        <option value="best">Best Sellers</option>
+        <option value="sale">Sale</option>
+      </select>
+      <label>Deskripsi</label>
+      <textarea id="adminDescription" placeholder="Deskripsi produk"></textarea>
+      <label>Foto produk</label>
+      <input id="adminImage" type="file" accept="image/jpeg,image/png,image/webp">
+      <img id="adminPreview" class="admin-preview" alt="Preview">
+
+      <div class="admin-actions">
+        <button type="submit" id="adminSave">Tambah Produk</button>
+        <button type="button" class="light" onclick="adminReset()">Batal</button>
+      </div>
+    </form>
+
+    <div class="admin-list" id="adminList"></div>
+  </aside>
+</div>
+
+<header>
+  <a class="logo" href="#">Skuy.Bli</a>
+  <nav class="nav"><a href="#admin" onclick="openAdmin();return false">Admin</a>
+    <a href="#home">Home</a><a href="admin.html">Admin</a><a href="#shop">Shop</a><a href="#new">New Arrival</a><a href="#sale">Sale</a>
+  </nav>
+  <div class="icons">
+    <a class="icon" href="admin.html" aria-label="admin">⚙</a>
+    <button class="icon mobile-menu" aria-label="menu">☰</button>
+    <button class="icon" aria-label="search">⌕</button>
+    <button class="icon" aria-label="cart" onclick="openCart()">🛍 <span id="cartCount">0</span></button>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div class="eyebrow">Curated fashion for everyday</div>
+    <h1>Find Your<br>Everyday<br>Favorite</h1>
+    <p>Fashion pieces yang simple, manis, dan mudah dipadukan untuk menemani setiap harimu.</p>
+    <a class="btn" href="#shop">Shop Now</a>
+    <div class="scroll">↓</div>
+  </div>
+</section>
+
+<section class="section">
+<div class="container">
+  <div class="section-head"><div class="eyebrow">Explore</div><h2>Shop by Category</h2><p>Temukan pieces favoritmu.</p></div>
+  <div class="categories">
+    <a class="category" href="#shop"><span>Hijab</span></a>
+    <a class="category" href="#shop"><span>Shoes</span></a>
+    <a class="category" href="#shop"><span>Accessories</span></a>
+    <a class="category" href="#shop"><span>Beauty</span></a>
+  </div>
+</div>
+</section>
+
+<section class="section" id="new">
+<div class="container">
+  <div class="section-head"><div class="eyebrow">Just In</div><h2>New Arrivals</h2><p>Fresh pieces, just for you.</p></div>
+  <div class="products" id="newProducts"></div>
+</div>
+</section>
+
+<section class="section" id="shop">
+<div class="container">
+  <div class="section-head"><div class="eyebrow">Most Loved</div><h2>Best Sellers</h2><p>Pieces yang paling disukai.</p></div>
+  <div class="products" id="bestProducts"></div>
+</div>
+</section>
+
+<section class="section" id="sale">
+<div class="container">
+  <div class="promo">
+    <div class="eyebrow">Special Offer</div>
+    <h2>A Little Something Special</h2>
+    <p>Up to 30% off selected pieces. Saatnya menemukan fashion favorit baru untuk menemani hari-harimu.</p>
+    <a class="btn" style="background:#fff;color:#7b3f58" href="#shop">Shop Sale</a>
+  </div>
+</div>
+</section>
+
+<section class="section">
+<div class="container editorial">
+  <div class="editorial-image"></div>
+  <div class="editorial-copy">
+    <div class="eyebrow">Our Story</div>
+    <h2>Style is the way you tell your story.</h2>
+    <p>Skuy.Bli hadir untuk menemani setiap sisi perempuan modern melalui fashion yang effortless, feminine, dan timeless.</p>
+    <a class="btn alt" href="#shop">Discover Skuy.Bli</a>
+  </div>
+</div>
+</section>
+
+
+</main>
+
+<footer>
+<div class="container">
+ <div class="footer-grid">
+  <div><div class="logo">Skuy.Bli</div><p>Effortless fashion for modern women. Simple, feminine, and easy to love.</p></div>
+  <div><h4>Explore</h4><a href="#shop">Shop</a><a href="#new">New Arrival</a><a href="#sale">Sale</a></div>
+  <div><h4>Help</h4><a href="#">Shipping</a><a href="#">Returns</a><a href="#">Contact</a></div>
+  <div><h4>Social</h4><a href="https://instagram.com/anggiydi_" target="_blank" rel="noopener">Instagram · @anggiydi_</a><a href="https://threads.net/@anggiydi_" target="_blank" rel="noopener">Threads · @anggiydi_</a><a href="https://wa.me/6285811687069" target="_blank" rel="noopener">WhatsApp · 0858 1168 7069</a></div>
+ </div>
+ 
+<div class="contact-quick" style="margin-top:34px;padding:22px 0;border-top:1px solid #4b4147">
+  <div style="font-family:'Cormorant Garamond',serif;font-size:30px;margin-bottom:10px">Let's connect</div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px">
+    <a href="https://wa.me/6285811687069" target="_blank" rel="noopener" style="display:inline-block;padding:11px 16px;border-radius:999px;background:#7b3f58;color:#fff">WhatsApp</a>
+    <a href="https://instagram.com/anggiydi_" target="_blank" rel="noopener" style="display:inline-block;padding:11px 16px;border-radius:999px;background:#f0dde3;color:#7b3f58">Instagram</a>
+    <a href="https://threads.net/@anggiydi_" target="_blank" rel="noopener" style="display:inline-block;padding:11px 16px;border-radius:999px;background:#f0dde3;color:#7b3f58">Threads</a>
+    
+  </div>
+</div>
+
+<div class="copy">© 2026 Skuy.Bli. All rights reserved.</div>
+</div>
+</footer>
+
+<div class="drawer" id="drawer" onclick="if(event.target===this)closeCart()">
+ <aside class="panel">
+  <div class="panel-head"><h2>Your Bag</h2><button class="close" onclick="closeCart()">×</button></div>
+  <div id="cartContent"></div>
+ </aside>
+</div>
+<script>
+const STORAGE_KEY='skuy_bli_products_v2';
+const DEFAULT_PRODUCTS=[{"id": 1, "name": "Blush Satin Scarf", "category": "Hijab", "price": 89000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 2, "name": "Elara Mini Bag", "category": "Accessories", "price": 179000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 3, "name": "Celeste Heels", "category": "Shoes", "price": 249000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 4, "name": "Amora Beauty Set", "category": "Beauty", "price": 129000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 5, "name": "Luna Pearl Hijab", "category": "Hijab", "price": 99000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 6, "name": "Belle Ribbon Flats", "category": "Shoes", "price": 219000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 7, "name": "Clara Shoulder Bag", "category": "Accessories", "price": 199000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 8, "name": "Rosé Glow Set", "category": "Beauty", "price": 149000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}];
+function getProducts(){try{const raw=localStorage.getItem('skuy_bli_products_v3')||localStorage.getItem(STORAGE_KEY);return raw===null?DEFAULT_PRODUCTS:JSON.parse(raw)}catch(e){return DEFAULT_PRODUCTS}}
+function saveProducts(items){localStorage.setItem(STORAGE_KEY,JSON.stringify(items))}
+function money(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}
+function safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+const CART_KEY='skuy_bli_cart_v2';
+function getCart(){try{return JSON.parse(localStorage.getItem(CART_KEY)||'{}')}catch(e){return {}}}
+function saveCart(c){localStorage.setItem(CART_KEY,JSON.stringify(c));renderCart()}
+function addCart(id){const c=getCart(),p=getProducts().find(x=>x.id===id);if(!p||p.stock<1)return alert('Stok habis');c[id]=Math.min((c[id]||0)+1,p.stock);saveCart(c);openCart()}
+function changeQty(id,delta){const c=getCart(),p=getProducts().find(x=>x.id===id);if(!p)return;const n=(c[id]||0)+delta;if(n<=0)delete c[id];else c[id]=Math.min(n,p.stock);saveCart(c)}
+function renderProducts(){const products=getProducts();for(const [key,target] of [['new','newProducts'],['best','bestProducts']]){const list=products.filter(p=>p.label===key);document.getElementById(target).innerHTML=list.length?list.map(p=>`<article class="card"><div class="photo ${p.image?'has-image':''}">${p.image?`<img src="${p.image}" alt="${safe(p.name)}">`:'<div class="shape"></div>'}<span class="badge">${key==='new'?'NEW':'BEST SELLER'}</span></div><div class="card-info"><h3>${safe(p.name)}</h3><p class="product-description">${safe(p.category)}</p><span class="price">${money(p.price)}</span>${p.oldPrice?` <span class="old">${money(p.oldPrice)}</span>`:''}<p>${safe(p.description)}</p><button class="btn" ${p.stock<1?'disabled':''} onclick="addCart(${p.id})">${p.stock<1?'Stok Habis':'Tambah ke Keranjang'}</button></div></article>`).join(''):'<p>Belum ada produk di koleksi ini. Tambahkan melalui halaman Admin.</p>'}}
+function renderCart(){const cart=getCart(),items=getProducts(),entries=Object.entries(cart).filter(([id,q])=>q>0&&items.some(p=>p.id===Number(id)));document.getElementById('cartCount').textContent=entries.reduce((a,[id,q])=>a+q,0);let total=0;document.getElementById('cartContent').innerHTML=entries.length?entries.map(([id,q])=>{const p=items.find(p=>p.id===Number(id));total+=p.price*q;return `<div class="cart-item"><div class="thumb">${p.image?`<img src="${p.image}" alt="">`:''}</div><div><h4>${safe(p.name)}</h4><small>${money(p.price)}</small><div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><span>${q}</span><button onclick="changeQty(${p.id},1)">+</button></div></div></div>`}).join('')+`<div class="total"><span>Subtotal</span><span>${money(total)}</span></div><button class="btn" style="width:100%" onclick="checkout()">Pesan Sekarang via WhatsApp</button>`:'<p>Keranjangmu masih kosong.</p>'}
+function checkout(){
+  const cart=getCart(), items=getProducts();
+  const rows=Object.entries(cart)
+    .map(([id,q])=>({p:items.find(p=>p.id===Number(id)),q}))
+    .filter(x=>x.p);
+  if(!rows.length){
+    alert('Keranjangmu masih kosong.');
+    return;
+  }
+  const total=rows.reduce((n,x)=>n+Number(x.p.price||0)*x.q,0);
+  const msg=`Halo Skuy.Bli 👋
+
+Saya ingin memesan:
+
+${rows.map(x=>`• ${x.p.name} x${x.q}: ${money(x.p.price*x.q)}`).join('\n')}
+
+Subtotal: ${money(total)}
+
+Nama:
+Alamat:
+
+Mohon dibantu cek ongkir dan proses pesanannya. Terima kasih 🤍`;
+
+  // Directly open WhatsApp. No browser prompt and no restart of the shopping flow.
+  window.location.href='https://wa.me/6285811687069?text='+encodeURIComponent(msg);
+}
+window.addEventListener('storage',()=>{renderProducts();renderCart()});renderProducts();renderCart();
+function openCart(){document.getElementById('drawer').classList.add('open')}
+function closeCart(){document.getElementById('drawer').classList.remove('open')}
+
+const ADMIN_STORAGE='skuy_bli_products_v3';
+const OLD_STORAGE='skuy_bli_products_v2';
+
+
+const CATEGORY_STORAGE='skuy_bli_categories_v1';
+const DEFAULT_CATEGORIES=['Hijab','Shoes','Accessories','Beauty','Clothing','Bags'];
+
+function readCategories(){
+  try{
+    const raw=localStorage.getItem(CATEGORY_STORAGE);
+    if(raw){
+      const parsed=JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length) return parsed;
+    }
+  }catch(e){}
+  return [...DEFAULT_CATEGORIES];
+}
+function writeCategories(items){
+  try{
+    localStorage.setItem(CATEGORY_STORAGE,JSON.stringify(items));
+    return true;
+  }catch(e){
+    alert('Kategori tidak bisa disimpan di browser ini.');
+    return false;
+  }
+}
+function refreshCategorySelect(){
+  const select=document.getElementById('adminCategory');
+  if(!select)return;
+  const current=select.value;
+  const cats=readCategories();
+  select.innerHTML=cats.map(c=>`<option value="${adminSafe(c)}">${adminSafe(c)}</option>`).join('');
+  if(cats.includes(current)) select.value=current;
+}
+function renderCategories(){
+  const box=document.getElementById('categoryList');
+  if(!box)return;
+  const cats=readCategories();
+  const products=readProducts();
+  box.innerHTML=cats.map(c=>{
+    const used=products.filter(p=>p.category===c).length;
+    return `<div class="category-row" data-category="${adminSafe(c)}">
+      <div><span>${adminSafe(c)}</span> <small>${used} produk</small></div>
+      <div class="mini">
+        <button type="button" onclick="startCategoryEdit(${JSON.stringify(c)})">Edit</button>
+        <button type="button" class="del" onclick="deleteCategory(${JSON.stringify(c)})">Hapus</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function addCategory(){
+  const input=document.getElementById('newCategoryName');
+  const name=(input.value||'').trim();
+  if(!name){alert('Nama kategori belum diisi.');return;}
+  const cats=readCategories();
+  if(cats.some(c=>c.toLowerCase()===name.toLowerCase())){
+    alert('Kategori tersebut sudah ada.');
+    return;
+  }
+  cats.push(name);
+  if(writeCategories(cats)){
+    input.value='';
+    refreshCategorySelect();
+    renderCategories();
+    renderCategoryCards();
+    document.getElementById('adminCategory').value=name;
+  }
+}
+function startCategoryEdit(oldName){
+  const row=[...document.querySelectorAll('.category-row')].find(el=>el.dataset.category===oldName);
+  if(!row)return;
+  const current=oldName;
+  row.innerHTML=`<div class="category-edit"><input id="editCatInput" value="${adminSafe(current)}" aria-label="Nama kategori baru"><button type="button" onclick="saveCategoryEdit(${JSON.stringify(current)})">Simpan</button><button type="button" onclick="renderCategories()">Batal</button></div>`;
+  const input=document.getElementById('editCatInput'); if(input){input.focus(); input.select(); input.addEventListener('keydown',e=>{if(e.key==='Enter')saveCategoryEdit(current); if(e.key==='Escape')renderCategories();});}
+}
+function saveCategoryEdit(oldName){
+  const input=document.getElementById('editCatInput');
+  const name=(input?.value||'').trim();
+  if(!name){alert('Nama kategori belum diisi.');return;}
+  if(name===oldName){renderCategories();return;}
+  const cats=readCategories();
+  if(cats.some(c=>c.toLowerCase()===name.toLowerCase() && c!==oldName)){alert('Nama kategori tersebut sudah ada.');return;}
+  const idx=cats.indexOf(oldName); if(idx<0)return;
+  cats[idx]=name;
+  const products=readProducts().map(p=>p.category===oldName?{...p,category:name}:p);
+  if(writeCategories(cats) && writeProducts(products)){
+    refreshCategorySelect();
+    renderCategories();
+    renderCategoryCards();
+    syncProducts();
+    document.getElementById('adminCategory').value=name;
+  }
+}
+function deleteCategory(name){
+  const products=readProducts();
+  const used=products.filter(p=>p.category===name).length;
+  if(used){
+    alert(`Kategori "${name}" masih dipakai oleh ${used} produk. Edit atau pindahkan produknya terlebih dahulu.`);
+    return;
+  }
+  if(!confirm(`Hapus kategori "${name}"?`))return;
+  const cats=readCategories().filter(c=>c!==name);
+  if(writeCategories(cats)){
+    refreshCategorySelect();
+    renderCategories();
+    renderCategoryCards();
+  }
+}
+function renderCategoryCards(){
+  const wrap=document.querySelector('.categories');
+  if(!wrap)return;
+  const cats=readCategories();
+  wrap.innerHTML=cats.map(c=>`<a class="category" href="#shop" data-category="${adminSafe(c)}"><span>${adminSafe(c)}</span></a>`).join('');
+  wrap.querySelectorAll('.category').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();filterCategory(el.dataset.category);}));
+}
+function filterCategory(category){
+  const products=getProducts().filter(p=>p.category===category);
+  const target=document.getElementById('newProducts');
+  if(!target)return;
+  target.innerHTML=products.length ? products.map(p=>`<article class="card">
+    <div class="photo ${p.image?'has-image':''}">${p.image?`<img src="${p.image}" alt="${safe(p.name)}">`:'<div class="shape"></div>'}</div>
+    <div class="card-info"><h3>${safe(p.name)}</h3><p class="product-description">${safe(p.description||'')}</p>
+    <span class="price">${money(p.price)}</span>${p.oldPrice?` <span class="old">${money(p.oldPrice)}</span>`:''}
+    <button class="btn" ${p.stock<1?'disabled':''} onclick="addCart(${p.id})">${p.stock<1?'Stok Habis':'Tambah ke Keranjang'}</button></div>
+  </article>`).join('') : '<p>Belum ada produk di kategori ini.</p>';
+  document.getElementById('new')?.scrollIntoView({behavior:'smooth'});
+}
+
+function readProducts(){
+  try{
+    let raw=localStorage.getItem(ADMIN_STORAGE);
+    if(!raw) raw=localStorage.getItem(OLD_STORAGE);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return DEFAULT_PRODUCTS.map(p=>({...p}));
+}
+function writeProducts(items){
+  try{
+    localStorage.setItem(ADMIN_STORAGE,JSON.stringify(items));
+    localStorage.setItem(OLD_STORAGE,JSON.stringify(items));
+    return true;
+  }catch(e){
+    alert('Browser ini tidak mengizinkan penyimpanan permanen. Produk tetap akan tampil selama halaman ini terbuka. Untuk toko online sungguhan kita perlu database online.');
+    return false;
+  }
+}
+function syncProducts(){
+  // Override the storefront's product reader with the same data used by Admin.
+  window.getProducts=readProducts;
+  refreshCategorySelect();
+  renderCategoryCards();
+  renderCategories();
+  renderProducts();
+  renderCart();
+  renderAdminList();
+}
+function openAdmin(){
+  document.getElementById('adminOverlay').classList.add('open');
+  refreshCategorySelect();
+  renderCategories();
+  renderAdminList();
+}
+function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open')}
+function adminMoney(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}
+function adminSafe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function renderAdminList(){
+  const list=document.getElementById('adminList');
+  if(!list)return;
+  const items=readProducts();
+  list.innerHTML='<div style="padding:18px 0 8px;font-size:12px;color:#766a70">'+items.length+' produk</div>'+
+    (items.length?items.map(p=>`
+      <div class="admin-item">
+        ${p.image?`<img src="${p.image}" alt="">`:'<div class="noimg"></div>'}
+        <div style="min-width:0;flex:1">
+          <strong>${adminSafe(p.name)}</strong>
+          <small>${adminSafe(p.category)} · ${adminMoney(p.price)} · stok ${p.stock}</small>
+          <div class="mini">
+            <button onclick="adminEdit(${p.id})">Edit</button>
+            <button class="del" onclick="adminDelete(${p.id})">Hapus</button>
+          </div>
+        </div>
+      </div>`).join(''):'<div style="padding:15px 0;color:#766a70">Belum ada produk.</div>');
+}
+function adminReset(){
+  document.getElementById('adminForm').reset();
+  document.getElementById('adminId').value='';
+  document.getElementById('adminOldPrice').value=0;
+  document.getElementById('adminStock').value=1;
+  document.getElementById('adminSave').textContent='Tambah Produk';
+  document.getElementById('adminPreview').style.display='none';
+  document.getElementById('adminPreview').src='';
+  document.getElementById('adminImage').value='';
+}
+function adminEdit(id){
+  const p=readProducts().find(x=>x.id===id); if(!p)return;
+  document.getElementById('adminId').value=p.id;
+  document.getElementById('adminName').value=p.name;
+  document.getElementById('adminCategory').value=p.category;
+  document.getElementById('adminPrice').value=p.price;
+  document.getElementById('adminOldPrice').value=p.oldPrice||0;
+  document.getElementById('adminStock').value=p.stock;
+  document.getElementById('adminLabel').value=p.label||'new';
+  document.getElementById('adminDescription').value=p.description||'';
+  document.getElementById('adminSave').textContent='Simpan Perubahan';
+  if(p.image){
+    document.getElementById('adminPreview').src=p.image;
+    document.getElementById('adminPreview').style.display='block';
+  }
+}
+function adminDelete(id){
+  if(!confirm('Hapus produk ini?'))return;
+  const items=readProducts().filter(p=>p.id!==id);
+  writeProducts(items); syncProducts();
+}
+function compressAdminImage(file,maxSide=1000,quality=.78){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onerror=reject;
+    r.onload=()=>{
+      const img=new Image();
+      img.onerror=reject;
+      img.onload=()=>{
+        const scale=Math.min(1,maxSide/Math.max(img.width,img.height));
+        const c=document.createElement('canvas');
+        c.width=Math.max(1,Math.round(img.width*scale));
+        c.height=Math.max(1,Math.round(img.height*scale));
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        resolve(c.toDataURL('image/jpeg',quality));
+      };
+      img.src=r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+document.getElementById('adminImage').addEventListener('change',async e=>{
+  const f=e.target.files[0]; if(!f)return;
+  try{
+    const data=await compressAdminImage(f);
+    document.getElementById('adminPreview').src=data;
+    document.getElementById('adminPreview').style.display='block';
+  }catch(e){alert('Foto tidak bisa diproses. Gunakan JPG, PNG, atau WebP.')}
+});
+document.getElementById('adminForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const items=readProducts();
+  const id=Number(document.getElementById('adminId').value)||Date.now();
+  const old=items.find(p=>p.id===id);
+  let image=old?.image||'';
+  const file=document.getElementById('adminImage').files[0];
+  if(file) image=await compressAdminImage(file);
+  const p={
+    id,
+    name:document.getElementById('adminName').value.trim(),
+    category:document.getElementById('adminCategory').value,
+    price:Number(document.getElementById('adminPrice').value||0),
+    oldPrice:Number(document.getElementById('adminOldPrice').value||0),
+    stock:Number(document.getElementById('adminStock').value||0),
+    label:document.getElementById('adminLabel').value,
+    description:document.getElementById('adminDescription').value.trim(),
+    image
+  };
+  if(!p.name){alert('Nama produk wajib diisi.');return}
+  if(old){
+    items[items.findIndex(x=>x.id===id)]=p;
+  }else{
+    items.unshift(p);
+  }
+  writeProducts(items);
+  syncProducts();
+  adminReset();
+  alert(old?'Produk berhasil diperbarui.':'Produk berhasil ditambahkan dan langsung tampil di toko.');
+});
+window.addEventListener('storage',syncProducts);
+syncProducts();
+
+
+document.addEventListener('DOMContentLoaded', function(){
+  const fab=document.querySelector('.admin-fab');
+  if(fab) fab.addEventListener('click', openAdmin);
+  const overlay=document.getElementById('adminOverlay');
+  if(overlay) overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAdmin(); });
+  try { refreshCategorySelect(); renderCategoryCards(); renderCategories(); syncProducts(); } catch(e) { console.error(e); }
+});
+
+function orderWhatsApp(){
+  const items = (typeof cart !== 'undefined' ? cart : []).map(x => {
+    const p = x.p || x.product || {};
+    const q = x.q || x.qty || x.quantity || 1;
+    return {p,q};
+  });
+  if(!items.length){
+    alert('Keranjang masih kosong.');
+    return;
+  }
+  const lines = items.map(x => `• ${x.p.name} x${x.q}: ${money(x.p.price*x.q)}`).join('\n');
+  const subtotal = items.reduce((s,x)=>s + Number(x.p.price||0)*x.q,0);
+  const message =
+`Halo Skuy.Bli 👋
+
+Saya ingin memesan:
+
+${lines}
+
+Subtotal: ${money(subtotal)}
+
+Nama:
+No. WhatsApp:
+Alamat:
+
+Mohon dibantu untuk proses pesanannya. Terima kasih 🤍`;
+
+  const url = 'https://wa.me/6285811687069?text=' + encodeURIComponent(message);
+  window.location.href = url;
+}
+</script>
+</body>
+</html>
