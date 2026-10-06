@@ -54,7 +54,7 @@ h1{font-size:clamp(62px,11vw,112px);line-height:.82;font-weight:500;letter-spaci
 .products{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
 .card{position:relative}
 .photo{aspect-ratio:4/5;border-radius:22px;overflow:hidden;background:#eadfe1;position:relative}
-.photo.has-image img{width:100%;height:100%;object-fit:cover;display:block}.thumb img{width:100%;height:100%;object-fit:cover;border-radius:14px}.photo .shape{position:absolute;width:55%;height:75%;left:23%;bottom:-5%;border-radius:50% 50% 14% 14%;background:linear-gradient(145deg,#9b7684,#d7b9c3)}
+.photo.has-image img{width:100%;height:100%;object-fit:cover;display:block}.photo:not(.has-image){display:none}.thumb img{width:100%;height:100%;object-fit:cover;border-radius:14px}.photo .shape{position:absolute;width:55%;height:75%;left:23%;bottom:-5%;border-radius:50% 50% 14% 14%;background:linear-gradient(145deg,#9b7684,#d7b9c3)}
 .photo .shape:before{content:"";position:absolute;width:55%;height:20%;left:23%;top:-5%;border-radius:50%;background:#6f4d5a}
 .photo.beige{background:#eee4d8}.photo.beige .shape{background:linear-gradient(145deg,#c88fa2,#f0dce2)} 
 .photo.cream{background:#eeeae6}.photo.cream .shape{background:linear-gradient(145deg,#b98a9a,#f4e4e9)}
@@ -69,9 +69,8 @@ h1{font-size:clamp(62px,11vw,112px);line-height:.82;font-weight:500;letter-spaci
 .promo{background:linear-gradient(145deg,#9b526b,#7b3f58);color:#fff;border-radius:34px;padding:65px 40px;text-align:center}
 .promo h2{font-size:58px}
 .promo p{color:#f8e9ed;max-width:500px;margin:14px auto 25px;line-height:1.7}
-.editorial{display:grid;grid-template-columns:1.1fr .9fr;gap:35px;align-items:center}
-.editorial-image{min-height:520px;border-radius:34px;background:linear-gradient(145deg,#ead4dc,#b77b91);position:relative;overflow:hidden}
-.editorial-image:after{content:"";position:absolute;width:55%;height:90%;left:22%;bottom:-10%;background:linear-gradient(160deg,#f4e4e9,#96566f);border-radius:48% 48% 8% 8%}
+.editorial{display:block}
+
 .editorial-copy{padding:25px}
 .editorial-copy h2{font-size:68px;line-height:.92;font-weight:500}
 .editorial-copy p{line-height:1.9;color:var(--muted);font-size:14px;margin:25px 0}
@@ -107,7 +106,7 @@ footer a{display:block;color:#c5b9be;font-size:13px;margin:10px 0}
   .section-head h2{font-size:45px}.categories{grid-template-columns:repeat(2,1fr);gap:10px}.category{height:220px;border-radius:20px;padding:17px}.category span{font-size:28px}
   .products{grid-template-columns:repeat(2,1fr);gap:15px}.photo{border-radius:17px}.card-info h3{font-size:21px}
   .promo{padding:48px 22px;border-radius:27px}.promo h2{font-size:45px}
-  .editorial{grid-template-columns:1fr}.editorial-image{min-height:390px;border-radius:25px}.editorial-copy{padding:5px}.editorial-copy h2{font-size:55px}
+  .editorial{display:block}.editorial-copy{padding:5px}.editorial-copy h2{font-size:55px}
     .footer-grid{grid-template-columns:1fr 1fr}.footer-grid>div:first-child{grid-column:1/-1}
 }
 </style>
@@ -324,7 +323,6 @@ footer a{display:block;color:#c5b9be;font-size:13px;margin:10px 0}
 
 <section class="section">
 <div class="container editorial">
-  <div class="editorial-image"></div>
   <div class="editorial-copy">
     <div class="eyebrow">Our Story</div>
     <h2>Style is the way you tell your story.</h2>
@@ -376,26 +374,38 @@ let onlineCategories=[];
 let adminSession=null;
 const STORAGE_KEY='skuy_bli_products_v2';
 const DEFAULT_PRODUCTS=[{"id": 1, "name": "Blush Satin Scarf", "category": "Hijab", "price": 89000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 2, "name": "Elara Mini Bag", "category": "Accessories", "price": 179000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 3, "name": "Celeste Heels", "category": "Shoes", "price": 249000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 4, "name": "Amora Beauty Set", "category": "Beauty", "price": 129000, "oldPrice": 0, "stock": 10, "description": "", "label": "new", "image": ""}, {"id": 5, "name": "Luna Pearl Hijab", "category": "Hijab", "price": 99000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 6, "name": "Belle Ribbon Flats", "category": "Shoes", "price": 219000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 7, "name": "Clara Shoulder Bag", "category": "Accessories", "price": 199000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}, {"id": 8, "name": "Rosé Glow Set", "category": "Beauty", "price": 149000, "oldPrice": 0, "stock": 10, "description": "", "label": "best", "image": ""}];
-async function loadOnlineData(){
-  try{
-    const [{data:cats,error:ce},{data:prods,error:pe}]=await Promise.all([
-      sb.from('categories').select('id,name').order('name'),
-      sb.from('products').select('id,name,price,category_id,description,image_url,stock,is_new,is_best_seller,is_sale,weight_grams').order('created_at',{ascending:false})
-    ]);
-    if(ce) throw ce; if(pe) throw pe;
-    onlineCategories=cats||[];
-    const cmap=new Map(onlineCategories.map(c=>[c.id,c.name]));
-    onlineProducts=(prods||[]).map(p=>({id:p.id,name:p.name,category:cmap.get(p.category_id)||'',price:Number(p.price||0),oldPrice:0,stock:Number(p.stock||0),description:p.description||'',label:p.is_sale?'sale':p.is_best_seller?'best':'new',image:p.image_url||'',weight_grams:Number(p.weight_grams||0)}));
-    if(onlineProducts.length || onlineCategories.length){
-      renderCategoryCards(); renderCategories(); renderProducts(); renderCart(); renderAdminList();
-    } else {
+let onlineLoadPromise=null;
+let onlineLoadedAt=0;
+async function loadOnlineData(force=false){
+  // Fast admin opening: never make the login screen wait for database/image loading.
+  if(!force && onlineLoadPromise) return onlineLoadPromise;
+  if(!force && onlineLoadedAt && (Date.now()-onlineLoadedAt)<15000) return;
+  onlineLoadPromise=(async()=>{
+    try{
+      const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Koneksi database terlalu lama.')),9000));
+      const request=Promise.all([
+        sb.from('categories').select('id,name').order('name'),
+        sb.from('products').select('id,name,price,category_id,description,image_url,stock,is_new,is_best_seller,is_sale,weight_grams').order('created_at',{ascending:false})
+      ]);
+      const [{data:cats,error:ce},{data:prods,error:pe}]=await Promise.race([request,timeout]);
+      if(ce) throw ce; if(pe) throw pe;
+      onlineCategories=cats||[];
+      const cmap=new Map(onlineCategories.map(c=>[c.id,c.name]));
+      onlineProducts=(prods||[]).map(p=>({id:p.id,name:p.name,category:cmap.get(p.category_id)||'',price:Number(p.price||0),oldPrice:0,stock:Number(p.stock||0),description:p.description||'',label:p.is_sale?'sale':p.is_best_seller?'best':'new',image:p.image_url||'',weight_grams:Number(p.weight_grams||0)}));
+      onlineLoadedAt=Date.now();
+      refreshCategorySelect(); renderCategoryCards(); renderCategories(); renderProducts(); renderCart(); renderAdminList();
+      const msg=document.getElementById('adminAuthMsg');
+      if(msg && adminSession) msg.textContent='';
+    }catch(err){
+      console.error(err);
       renderCategoryCards(); renderProducts(); renderCart();
+      const msg=document.getElementById('adminAuthMsg');
+      if(msg && adminSession) msg.textContent='Login berhasil. Data sedang dimuat, coba tunggu sebentar.';
+    }finally{
+      onlineLoadPromise=null;
     }
-  }catch(err){
-    console.error(err);
-    onlineProducts=[]; onlineCategories=[];
-    renderCategoryCards(); renderProducts(); renderCart();
-  }
+  })();
+  return onlineLoadPromise;
 }
 function getProducts(){return onlineProducts.length?onlineProducts:DEFAULT_PRODUCTS}
 function saveProducts(items){onlineProducts=items}
@@ -407,8 +417,8 @@ function getCart(){try{return JSON.parse(localStorage.getItem(CART_KEY)||'{}')}c
 function saveCart(c){localStorage.setItem(CART_KEY,JSON.stringify(c));renderCart()}
 function addCart(id){const c=getCart(),p=getProducts().find(x=>x.id===id);if(!p||p.stock<1)return alert('Stok habis');c[id]=Math.min((c[id]||0)+1,p.stock);saveCart(c);openCart()}
 function changeQty(id,delta){const c=getCart(),p=getProducts().find(x=>x.id===id);if(!p)return;const n=(c[id]||0)+delta;if(n<=0)delete c[id];else c[id]=Math.min(n,p.stock);saveCart(c)}
-function renderProducts(){const products=getProducts();for(const [key,target] of [['new','newProducts'],['best','bestProducts']]){const list=products.filter(p=>p.label===key);document.getElementById(target).innerHTML=list.length?list.map(p=>`<article class="card"><div class="photo ${p.image?'has-image':''}">${p.image?`<img src="${p.image}" alt="${safe(p.name)}">`:'<div class="shape"></div>'}<span class="badge">${key==='new'?'NEW':'BEST SELLER'}</span></div><div class="card-info"><h3>${safe(p.name)}</h3><p class="product-description">${safe(p.category)}</p><span class="price">${money(p.price)}</span>${p.oldPrice?` <span class="old">${money(p.oldPrice)}</span>`:''}<p>${safe(p.description)}</p><button class="btn" ${p.stock<1?'disabled':''} onclick="addCart(${p.id})">${p.stock<1?'Stok Habis':'Tambah ke Keranjang'}</button></div></article>`).join(''):'<p>Belum ada produk di koleksi ini. Tambahkan melalui Admin.</p>'}}
-function renderCart(){const cart=getCart(),items=getProducts(),entries=Object.entries(cart).filter(([id,q])=>q>0&&items.some(p=>p.id===Number(id)));document.getElementById('cartCount').textContent=entries.reduce((a,[id,q])=>a+q,0);let total=0;document.getElementById('cartContent').innerHTML=entries.length?entries.map(([id,q])=>{const p=items.find(p=>p.id===Number(id));total+=p.price*q;return `<div class="cart-item"><div class="thumb">${p.image?`<img src="${p.image}" alt="">`:''}</div><div><h4>${safe(p.name)}</h4><small>${money(p.price)}</small><div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><span>${q}</span><button onclick="changeQty(${p.id},1)">+</button></div></div></div>`}).join('')+`<div class="total"><span>Subtotal</span><span>${money(total)}</span></div><button class="btn" style="width:100%" onclick="checkout()">Pesan Sekarang via WhatsApp</button>`:'<p>Keranjangmu masih kosong.</p>'}
+function renderProducts(){const products=getProducts();for(const [key,target] of [['new','newProducts'],['best','bestProducts']]){const list=products.filter(p=>p.label===key);document.getElementById(target).innerHTML=list.length?list.map(p=>`<article class="card"><div class="photo ${p.image?'has-image':''}">${p.image?`<img src="${p.image}" alt="${safe(p.name)}" loading="lazy" decoding="async">`:'<div class="shape"></div>'}<span class="badge">${key==='new'?'NEW':'BEST SELLER'}</span></div><div class="card-info"><h3>${safe(p.name)}</h3><p class="product-description">${safe(p.category)}</p><span class="price">${money(p.price)}</span>${p.oldPrice?` <span class="old">${money(p.oldPrice)}</span>`:''}<p>${safe(p.description)}</p><button class="btn" ${p.stock<1?'disabled':''} onclick="addCart(${p.id})">${p.stock<1?'Stok Habis':'Tambah ke Keranjang'}</button></div></article>`).join(''):'<p>Belum ada produk di koleksi ini. Tambahkan melalui Admin.</p>'}}
+function renderCart(){const cart=getCart(),items=getProducts(),entries=Object.entries(cart).filter(([id,q])=>q>0&&items.some(p=>p.id===Number(id)));document.getElementById('cartCount').textContent=entries.reduce((a,[id,q])=>a+q,0);let total=0;document.getElementById('cartContent').innerHTML=entries.length?entries.map(([id,q])=>{const p=items.find(p=>p.id===Number(id));total+=p.price*q;return `<div class="cart-item"><div class="thumb">${p.image?`<img src="${p.image}" alt="" loading="lazy" decoding="async">`:''}</div><div><h4>${safe(p.name)}</h4><small>${money(p.price)}</small><div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><span>${q}</span><button onclick="changeQty(${p.id},1)">+</button></div></div></div>`}).join('')+`<div class="total"><span>Subtotal</span><span>${money(total)}</span></div><button class="btn" style="width:100%" onclick="checkout()">Pesan Sekarang via WhatsApp</button>`:'<p>Keranjangmu masih kosong.</p>'}
 function checkout(){
   const cart=getCart(), items=getProducts();
   const rows=Object.entries(cart)
@@ -450,8 +460,57 @@ function refreshCategorySelect(){const select=document.getElementById('adminCate
 function renderCategories(){const box=document.getElementById('categoryList');if(!box)return;const cats=readCategories();const products=readProducts();box.innerHTML=cats.map(c=>{const used=products.filter(p=>p.category===c).length;return `<div class="category-row" data-category="${adminSafe(c)}"><div><span>${adminSafe(c)}</span> <small>${used} produk</small></div><div class="mini"><button type="button" onclick="startCategoryEdit(${JSON.stringify(c)})">Edit</button><button type="button" class="del" onclick="deleteCategory(${JSON.stringify(c)})">Hapus</button></div></div>`}).join('')}
 async function addCategory(){if(!adminSession){return showAdminAuth('Silakan login Admin terlebih dahulu.')}const input=document.getElementById('newCategoryName');const name=(input.value||'').trim();if(!name)return alert('Nama kategori belum diisi.');if(readCategories().some(c=>c.toLowerCase()===name.toLowerCase()))return alert('Kategori tersebut sudah ada.');const {data,error}=await sb.from('categories').insert({name}).select('id,name').single();if(error)return alert('Kategori gagal disimpan: '+error.message);onlineCategories.push(data);input.value='';refreshCategorySelect();renderCategories();renderCategoryCards();document.getElementById('adminCategory').value=name}
 function startCategoryEdit(oldName){const row=[...document.querySelectorAll('.category-row')].find(el=>el.dataset.category===oldName);if(!row)return;row.innerHTML=`<div class="category-edit"><input id="editCatInput" value="${adminSafe(oldName)}" aria-label="Nama kategori baru"><button type="button" onclick="saveCategoryEdit(${JSON.stringify(oldName)})">Simpan</button><button type="button" onclick="renderCategories()">Batal</button></div>`;const input=document.getElementById('editCatInput');if(input){input.focus();input.select();input.addEventListener('keydown',e=>{if(e.key==='Enter')saveCategoryEdit(oldName);if(e.key==='Escape')renderCategories()})}}
-async function saveCategoryEdit(oldName){if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');const input=document.getElementById('editCatInput');const name=(input?.value||'').trim();if(!name)return alert('Nama kategori belum diisi.');if(name===oldName){renderCategories();return}if(readCategories().some(c=>c.toLowerCase()===name.toLowerCase()&&c!==oldName))return alert('Nama kategori tersebut sudah ada.');const cat=onlineCategories.find(c=>c.name===oldName);if(!cat)return;const {data,error}=await sb.from('categories').update({name}).eq('id',cat.id).select('id,name').single();if(error)return alert('Kategori gagal diubah: '+error.message);onlineCategories=onlineCategories.map(c=>c.id===cat.id?data:c);refreshCategorySelect();renderCategories();renderCategoryCards();await loadOnlineData();document.getElementById('adminCategory').value=name}
-async function deleteCategory(name){if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');const products=readProducts();const used=products.filter(p=>p.category===name).length;if(used)return alert(`Kategori "${name}" masih dipakai oleh ${used} produk. Pindahkan produknya terlebih dahulu.`);if(!confirm(`Hapus kategori "${name}"?`))return;const cat=onlineCategories.find(c=>c.name===name);if(!cat)return;const {error}=await sb.from('categories').delete().eq('id',cat.id);if(error)return alert('Kategori gagal dihapus: '+error.message);onlineCategories=onlineCategories.filter(c=>c.id!==cat.id);refreshCategorySelect();renderCategories();renderCategoryCards()}
+async function saveCategoryEdit(oldName){
+  if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');
+  const input=document.getElementById('editCatInput');
+  const name=(input?.value||'').trim();
+  if(!name)return alert('Nama kategori belum diisi.');
+  if(name===oldName){renderCategories();return;}
+  if(readCategories().some(c=>c.toLowerCase()===name.toLowerCase()&&c!==oldName))return alert('Nama kategori tersebut sudah ada.');
+  const cat=onlineCategories.find(c=>c.name===oldName);
+  if(!cat)return alert('Kategori tidak ditemukan di database. Muat ulang halaman lalu coba lagi.');
+  const {data,error}=await sb.from('categories').update({name}).eq('id',cat.id).select('id,name').single();
+  if(error)return alert('Kategori gagal diubah: '+error.message);
+  onlineCategories=onlineCategories.map(c=>c.id===cat.id?data:c);
+  refreshCategorySelect();
+  renderCategories();
+  renderCategoryCards();
+  await loadOnlineData(true);
+  refreshCategorySelect();
+  renderCategories();
+  renderCategoryCards();
+  document.getElementById('adminCategory').value=name;
+  alert('Kategori berhasil diubah.');
+}
+async function deleteCategory(name){
+  if(!adminSession)return showAdminAuth('Silakan login Admin terlebih dahulu.');
+  const cat=onlineCategories.find(c=>c.name===name);
+  if(!cat)return alert('Kategori tidak ditemukan di database. Muat ulang halaman lalu coba lagi.');
+  const products=onlineProducts.filter(p=>p.category===name);
+  const used=products.length;
+  const message=used
+    ? `Kategori "${name}" sedang dipakai oleh ${used} produk. Jika dihapus, kategori produk tersebut akan dikosongkan. Lanjutkan?`
+    : `Hapus kategori "${name}"?`;
+  if(!confirm(message))return;
+  try{
+    if(used){
+      const {error:pe}=await sb.from('products').update({category_id:null}).eq('category_id',cat.id);
+      if(pe)throw pe;
+    }
+    const {error}=await sb.from('categories').delete().eq('id',cat.id);
+    if(error)throw error;
+    onlineCategories=onlineCategories.filter(c=>c.id!==cat.id);
+    await loadOnlineData(true);
+    refreshCategorySelect();
+    renderCategories();
+    renderCategoryCards();
+    renderProducts();
+    renderAdminList();
+    alert('Kategori berhasil dihapus.');
+  }catch(err){
+    alert('Kategori gagal dihapus: '+(err?.message||err));
+  }
+}
 
 function renderCategoryCards(){
   const wrap=document.querySelector('.categories');
@@ -465,7 +524,7 @@ function filterCategory(category){
   const target=document.getElementById('newProducts');
   if(!target)return;
   target.innerHTML=products.length ? products.map(p=>`<article class="card">
-    <div class="photo ${p.image?'has-image':''}">${p.image?`<img src="${p.image}" alt="${safe(p.name)}">`:'<div class="shape"></div>'}</div>
+    <div class="photo ${p.image?'has-image':''}">${p.image?`<img src="${p.image}" alt="${safe(p.name)}" loading="lazy" decoding="async">`:'<div class="shape"></div>'}</div>
     <div class="card-info"><h3>${safe(p.name)}</h3><p class="product-description">${safe(p.description||'')}</p>
     <span class="price">${money(p.price)}</span>${p.oldPrice?` <span class="old">${money(p.oldPrice)}</span>`:''}
     <button class="btn" ${p.stock<1?'disabled':''} onclick="addCart(${p.id})">${p.stock<1?'Stok Habis':'Tambah ke Keranjang'}</button></div>
@@ -484,11 +543,30 @@ async function writeProductOnline(p,oldId){
 }
 async function deleteProductOnline(id){const {error}=await sb.from('products').delete().eq('id',id);if(error)throw error}
 function syncProducts(){refreshCategorySelect();renderCategoryCards();renderCategories();renderProducts();renderCart();renderAdminList()}
-async function openAdmin(){document.getElementById('adminOverlay').classList.add('open');const {data:{session}}=await sb.auth.getSession();adminSession=session;updateAdminAuthUI();if(session){await loadOnlineData();await ensureDefaultCategories();refreshCategorySelect();renderCategories();renderAdminList()}}
+async function openAdmin(){document.getElementById('adminOverlay').classList.add('open');const {data:{session}}=await sb.auth.getSession();adminSession=session;updateAdminAuthUI();if(session){refreshCategorySelect();renderCategories();renderAdminList();loadOnlineData().then(()=>ensureDefaultCategories()).then(()=>{refreshCategorySelect();renderCategories();renderAdminList()}).catch(()=>{})}}
 function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open')}
 function showAdminAuth(msg=''){const el=document.getElementById('adminAuthMsg');if(el)el.textContent=msg}
 function updateAdminAuthUI(){const auth=document.getElementById('adminAuth');const tools=document.getElementById('adminTools');if(adminSession){auth.style.display='none';tools.style.display='block'}else{auth.style.display='block';tools.style.display='none'}}
-async function adminLogin(){const email=document.getElementById('adminEmail').value.trim();const password=document.getElementById('adminPassword').value;if(!email||!password)return showAdminAuth('Isi email dan password admin.');showAdminAuth('Sedang masuk...');const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)return showAdminAuth('Login gagal: '+error.message);adminSession=data.session;updateAdminAuthUI();await loadOnlineData();await ensureDefaultCategories();await loadOnlineData();refreshCategorySelect();renderCategories();renderAdminList();showAdminAuth('')}
+async function adminLogin(){
+  const email=document.getElementById('adminEmail').value.trim();
+  const password=document.getElementById('adminPassword').value;
+  const btn=document.querySelector('#adminAuth button');
+  if(!email||!password)return showAdminAuth('Isi email dan password admin.');
+  if(btn){btn.disabled=true;btn.textContent='Memproses...'}
+  showAdminAuth('Memverifikasi login...');
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password});
+    if(error) return showAdminAuth('Login gagal: '+error.message);
+    adminSession=data.session;
+    updateAdminAuthUI();
+    refreshCategorySelect(); renderCategories(); renderAdminList();
+    showAdminAuth('Login berhasil.');
+    // Database and product images load in the background so Admin opens immediately.
+    loadOnlineData().then(()=>ensureDefaultCategories()).then(()=>{refreshCategorySelect();renderCategories();renderAdminList()}).catch(()=>{});
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Masuk Admin'}
+  }
+}
 async function adminLogout(){await sb.auth.signOut();adminSession=null;updateAdminAuthUI();showAdminAuth('Kamu sudah logout.');}
 async function ensureDefaultCategories(){if(!adminSession)return;if(onlineCategories.length)return;for(const name of DEFAULT_CATEGORIES){await sb.from('categories').insert({name}).select('id,name').single()}await loadOnlineData()}
 sb.auth.onAuthStateChange((_event,session)=>{adminSession=session;updateAdminAuthUI()})
@@ -502,13 +580,13 @@ function renderAdminList(){
   list.innerHTML='<div style="padding:18px 0 8px;font-size:12px;color:#766a70">'+items.length+' produk</div>'+
     (items.length?items.map(p=>`
       <div class="admin-item">
-        ${p.image?`<img src="${p.image}" alt="">`:'<div class="noimg"></div>'}
+        ${p.image?`<img src="${p.image}" alt="" loading="lazy" decoding="async">`:'<div class="noimg"></div>'}
         <div style="min-width:0;flex:1">
           <strong>${adminSafe(p.name)}</strong>
           <small>${adminSafe(p.category)} · ${adminMoney(p.price)} · stok ${p.stock}</small>
           <div class="mini">
-            <button onclick="adminEdit(${p.id})">Edit</button>
-            <button class="del" onclick="adminDelete(${p.id})">Hapus</button>
+            <button type="button" onclick="adminEdit(${p.id})">Edit</button>
+            <button type="button" class="del" onclick="adminDelete(${p.id})">Hapus</button>
           </div>
         </div>
       </div>`).join(''):'<div style="padding:15px 0;color:#766a70">Belum ada produk.</div>');
@@ -545,7 +623,7 @@ async function adminDelete(id){
   if(!confirm('Hapus produk ini?'))return;
   try{await deleteProductOnline(id);await loadOnlineData();syncProducts();}catch(err){alert('Produk gagal dihapus: '+err.message)}
 }
-function compressAdminImage(file,maxSide=1000,quality=.78){
+function compressAdminImage(file,maxSide=700,quality=.68){
   return new Promise((resolve,reject)=>{
     const r=new FileReader();
     r.onerror=reject;
@@ -591,7 +669,6 @@ document.getElementById('adminForm').addEventListener('submit',async e=>{
 
 window.addEventListener('storage',syncProducts);
 syncProducts();
-loadOnlineData();
 
 
 document.addEventListener('DOMContentLoaded', function(){
